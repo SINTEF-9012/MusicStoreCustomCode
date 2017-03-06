@@ -10,7 +10,9 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;        // set our port
 
 var mongoose = require('mongoose')
-mongoose.connect('mongodb://mongo:27017')
+mongoose.connect('mongodb://mongo:27017');
+
+var Donation = require('./models/donation');
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -24,7 +26,16 @@ router.get('/', function(req, res) {
 router.route('/donation')
 
     .post(function(req, res){
-        var 
+        var donationItem = new Donation();
+        donationItem.cart = req.body.cart;
+        donationItem.proportion = req.body.proportion;
+
+        bear.save(function(err){
+            if (err)
+                res.send(err);
+
+            res.json({ message: 'Donation Item created!' });
+        });
     })
 
 // more routes for our API will happen here

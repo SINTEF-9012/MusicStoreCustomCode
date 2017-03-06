@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var DonationSchema = new Schema({
-    cartId: Number,
-    prop: Number
+    cart: Number,
+    proportion: Number
 })
 
 module.exports = mongoose.model('Donation', DonationSchema)
