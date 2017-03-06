@@ -38,7 +38,7 @@ router.route('/donation')
         });
     })
 
-router.rout('/donations')
+router.route('/donations')
     .get(function(req, res){
         Donation.find(function(err, items){
             if (err)
