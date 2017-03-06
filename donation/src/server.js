@@ -9,6 +9,9 @@ app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
 
+var mongoose = require('mongoose')
+mongoose.connect('mongodb://mongo:27017')
+
 // ROUTES FOR OUR API
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
@@ -17,6 +20,12 @@ var router = express.Router();              // get an instance of the express Ro
 router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });   
 });
+
+router.route('/donation')
+
+    .post(function(req, res){
+        var 
+    })
 
 // more routes for our API will happen here
 
