@@ -30,7 +30,7 @@ router.route('/donation')
         donationItem.cart = req.body.cart;
         donationItem.proportion = req.body.proportion;
 
-        bear.save(function(err){
+        donationItem.save(function(err){
             if (err)
                 res.send(err);
 
