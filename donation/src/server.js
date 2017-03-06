@@ -38,6 +38,15 @@ router.route('/donation')
         });
     })
 
+router.rout('/donations')
+    .get(function(req, res){
+        Donation.find(function(err, items){
+            if (err)
+                res.send(err);
+            res.json(items);
+        })
+    })
+
 // more routes for our API will happen here
 
 // REGISTER OUR ROUTES -------------------------------
