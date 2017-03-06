@@ -34,7 +34,7 @@ router.route('/donation')
             if (err)
                 res.send(err);
 
-            res.json({ message: 'Donation Item created!' });
+            res.json(req.body);
         });
     })
 
