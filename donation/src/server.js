@@ -10,9 +10,9 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;        // set our port
 
 var mongoose = require('mongoose')
-mongoose.connect('mongodb://mongo:27017');
+mongoose.connect('mongodb://localhost:27017');
 
-var Donation = require('./models/donation');
+var CartItemX = require('./models/cartitemx');
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -23,29 +23,70 @@ router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });   
 });
 
-router.route('/donation')
+router.route('/cartitemx')
 
     .post(function(req, res){
-        var donationItem = new Donation();
-        donationItem.cart = req.body.cart;
-        donationItem.proportion = req.body.proportion;
+        var itemx = new CartItemX();
+        itemx.cart = req.body.cart;
+        itemx.donation = req.body.donation;
 
-        donationItem.save(function(err){
+        itemx.save(function(err){
             if (err)
                 res.send(err);
-
             res.json(req.body);
         });
-    })
+    });
 
-router.route('/donations')
+router.route('/listcartitemx')
     .get(function(req, res){
-        Donation.find(function(err, items){
+        CartItemX.find(function(err, items){
             if (err)
                 res.send(err);
             res.json(items);
         })
-    })
+    });
+
+
+//====Start ShoppingCart.GetTotal=============
+
+router.route('/shoppingcartx/gettotal/before')
+    .post(function(req, res){
+        var result = {
+            callback: {
+                body: {items: 'this.GetCartItems()'},
+                function: '/compute',
+            },
+            comment: 'what is that?'
+        }
+        res.json(result)
+    });
+
+router.route('/shoppingcartx/gettotal/compute')
+    .post(function(req, res){
+        var items = req.body.items;
+        var total = 0;
+        var counted = items.length
+        items.forEach(function(item){
+            id = item.CartItemId
+            CartItemX.findOne({cart: id}, function(err, result){
+                console.log(result);
+                if(err || (! result)) 
+                    item.donation = 0;
+                else 
+                    item.donation = result.donation;
+                total = total + item.Count * item.Album.Price * (1 + item.donation);
+                
+                if(--counted == 0){
+                    var result = {
+                        returnx: total
+                    }
+                    res.json(result)
+                }
+            }); 
+        });
+    });
+
+//=====End ShoppingCart.GetTotal==============
 
 // more routes for our API will happen here
 
