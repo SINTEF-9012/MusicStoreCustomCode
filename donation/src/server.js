@@ -10,9 +10,18 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;        // set our port
 
 var mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost:27017');
 
-var CartItemX = require('./models/cartitemx');
+mongoose.connect('mongodb://mongo:27017');
+//mongoose.connect('mongodb://127.0.0.1:27017');
+
+var Schema = mongoose.Schema;
+
+var CartItemXSchema = new Schema({
+    cart: Number,
+    donation: Number
+})
+
+var CartItemX = mongoose.model('Donation', CartItemXSchema);
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -29,11 +38,10 @@ router.route('/cartitemx')
         var itemx = new CartItemX();
         itemx.cart = req.body.cart;
         itemx.donation = req.body.donation;
-
         itemx.save(function(err){
             if (err)
                 res.send(err);
-            res.json(req.body);
+            res.json(body)
         });
     });
 
@@ -87,6 +95,48 @@ router.route('/shoppingcartx/gettotal/compute')
     });
 
 //=====End ShoppingCart.GetTotal==============
+
+//=====Begin of ShoppingCartController.AddItem=======================
+router.route('/shoppingcartcontrollerx/additem/after')
+    .post(function(req, res){
+        var formstr = "<html><body> \
+        <form action='{0}/donate' method='post'> \
+        <label>How much would you like to donate to help poor Chinese children?</label> </br>\
+        <input type='hidden' name='itemid' value='{1}' /> \
+        <input type='hidden' id = 'wherefrom' name='wherefrom' value='' />\
+        <input type='range' name='donation' step='0.01' min='0' max='1'/> </br> \
+        <button type='submit'>Submit</button> \
+        <script>document.getElementById('wherefrom').value = window.location.href;</script> \
+        </form></body></html>"
+        var result = {
+            context: {
+                str_form: formstr,
+                newitem: "(await $cart.GetCartItems()).FirstOrDefault(item => item.AlbumId == id)",
+                form: "String.format($str_form, $endpoint, $newitem.CartItemId)",
+                content: "$this.Content($form)"
+            },
+            instructions: ["$content.ContentType = \"text/html\""],
+            returnx: "$content"
+        };
+        res.json(result);
+    });
+
+router.route('/shoppingcartcontrollerx/additem/donate')
+    .post(function(req, res){
+        var itemx = new CartItemX();
+        itemx.cart = req.body.itemid;
+        itemx.donation = req.body.donation;
+        wherefrom = req.body.wherefrom
+        wherefrom = wherefrom.substring(0, wherefrom.lastIndexOf("/"))
+        wherefrom = wherefrom.substring(0, wherefrom.lastIndexOf("/"))
+        itemx.save(function(err){
+            if (err)
+                res.send(err);
+            res.writeHead(301, {Location: wherefrom});
+            res.end();
+        });
+
+    })
 
 // more routes for our API will happen here
 
