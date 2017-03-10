@@ -2,8 +2,6 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 
-// configure app to use bodyParser()
-// this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -15,16 +13,12 @@ mongoose.connect('mongodb://mongo:27017');
 //mongoose.connect('mongodb://127.0.0.1:27017');
 
 var Schema = mongoose.Schema;
-
 var CartItemXSchema = new Schema({
     cart: Number,
     donation: Number
 })
-
 var CartItemX = mongoose.model('Donation', CartItemXSchema);
 
-// ROUTES FOR OUR API
-// =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
@@ -85,6 +79,7 @@ router.route('/shoppingcartx/gettotal/compute')
                 total = total + item.Count * item.Album.Price * (1 + item.donation);
                 
                 if(--counted == 0){
+		    total = Number(total.toFixed(4));
                     var result = {
                         returnx: total
                     }
