@@ -9,7 +9,7 @@ var port = process.env.PORT || 8080;        // set our port
 
 var mongoose = require('mongoose')
 
-mongoose.connect('mongodb://mongo:27017');
+mongoose.connect('mongodb://mongo:27017');  //for database in docker
 //mongoose.connect('mongodb://127.0.0.1:27017');
 
 var Schema = mongoose.Schema;
@@ -54,7 +54,7 @@ router.route('/listcartitemx')
 router.route('/shoppingcartx/gettotal/before')
     .post(function(req, res){
         var result = {
-            callback: {
+            nextcall: {
                 body: {items: '$this.GetCartItems().Result'},
                 function: '/compute',
             },
@@ -79,7 +79,7 @@ router.route('/shoppingcartx/gettotal/compute')
                 total = total + item.Count * item.Album.Price * (1 + item.donation);
                 
                 if(--counted == 0){
-		    total = Number(total.toFixed(4));
+		            total = Number(total.toFixed(4));
                     var result = {
                         returnx: total
                     }
@@ -131,7 +131,6 @@ router.route('/shoppingcartcontrollerx/additem/donate')
             res.writeHead(301, {Location: wherefrom});
             res.end();
         });
-
     })
 
 // more routes for our API will happen here
