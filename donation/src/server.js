@@ -55,7 +55,7 @@ router.route('/shoppingcartx/gettotal/before')
     .post(function(req, res){
         var result = {
             callback: {
-                body: {items: 'this.GetCartItems()'},
+                body: {items: '$this.GetCartItems().Result'},
                 function: '/compute',
             },
             comment: 'what is that?'
@@ -106,11 +106,12 @@ router.route('/shoppingcartcontrollerx/additem/after')
         var result = {
             context: {
                 str_form: formstr,
-                newitem: "(await $cart.GetCartItems()).FirstOrDefault(item => item.AlbumId == id)",
-                form: "String.format($str_form, $endpoint, $newitem.CartItemId)",
-                content: "$this.Content($form)"
+                str_contenttype: "text/html",
+                newitem: "$cart.GetCartItems().Result.FirstOrDefault(AlbumId == $id)",
+                form: "String.format($str_form, $endpoint, $newitem.CartItemId.ToString())",
+                content: "$this.Content($form)",
+                _void: "SET $content.ContentType = $str_contenttype"
             },
-            instructions: ["$content.ContentType = \"text/html\""],
             returnx: "$content"
         };
         res.json(result);
